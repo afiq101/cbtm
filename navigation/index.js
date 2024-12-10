@@ -11,6 +11,13 @@ export default [
         meta: {},
       },
       {
+        title: "Formula Builder",
+        path: "/formula/builder",
+        icon: "icon-park-outline:formula",
+        child: [],
+        meta: {},
+      },
+      {
         title: "Assessment",
         path: "/assessment",
         icon: "ic:outline-assessment",
