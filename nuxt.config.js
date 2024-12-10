@@ -18,12 +18,13 @@ export default defineNuxtConfig({
     "nuxt-typed-router",
     "nuxt-icon",
     "@davestewart/nuxt-scrollbar",
+    "nuxt-multi-tenancy",
   ],
   app: {
     pageTransition: { name: "page", mode: "out-in" },
   },
-  vite:{
-    server:{
+  vite: {
+    server: {
       watch: {
         usePolling: true,
         interval: 1000,
@@ -31,17 +32,21 @@ export default defineNuxtConfig({
     },
   },
   head: {
-    title: "corrad",
+    title: "cbtm",
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         hid: "description",
         name: "description",
-        content: "corrad",
+        content: "cbtm",
       },
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+  },
+  multiTenancy: {
+    tenantDynamicRoute: "site",
+    rootDomains: ["cbtm.com"],
   },
   css: ["~/assets/style/scss/main.scss"],
   tailwindcss: {
@@ -68,8 +73,8 @@ export default defineNuxtConfig({
       type: "module",
     },
     manifest: {
-      name: "corrad",
-      short_name: "corrad",
+      name: "cbtm",
+      short_name: "cbtm",
       theme_color: "#202D3B",
       background_color: "#FAFAFA",
       display: "standalone",

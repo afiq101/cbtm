@@ -17,6 +17,7 @@
     "eslint-plugin-vue": "^9.16.1",
     "nuxt": "^3.6.5",
     "nuxt-icon": "^0.1.7",
+    "nuxt-multi-tenancy": "^1.2.4",
     "nuxt-security": "^0.13.0",
     "nuxt-typed-router": "^3.2.5",
     "postcss-import": "^15.1.0"

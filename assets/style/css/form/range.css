@@ -1,3 +1,31 @@
 .formkit-input-range {
-  @apply appearance-none w-full h-2 p-0 bg-[rgb(var(--bg-1))] rounded-full focus:outline-none focus:ring-0 focus:shadow-none;
+  @apply appearance-none w-full h-2 p-0 bg-[rgb(var(--bg-1))] rounded-full focus:outline-none focus:ring-2 focus:ring-primary/30 focus:shadow-none cursor-pointer transition-all;
+}
+
+.formkit-input-range::-webkit-slider-thumb {
+  @apply appearance-none w-4 h-4 bg-primary rounded-full cursor-pointer hover:ring-4 hover:ring-primary/20 focus:ring-4 focus:ring-primary/30 transition-all;
+}
+
+.formkit-input-range::-moz-range-thumb {
+  @apply appearance-none w-4 h-4 bg-primary rounded-full cursor-pointer hover:ring-4 hover:ring-primary/20 focus:ring-4 focus:ring-primary/30 transition-all border-0;
+}
+
+.formkit-input-range::-ms-thumb {
+  @apply appearance-none w-4 h-4 bg-primary rounded-full cursor-pointer hover:ring-4 hover:ring-primary/20 focus:ring-4 focus:ring-primary/30 transition-all;
+}
+
+.formkit-input-range::-webkit-slider-runnable-track {
+  @apply appearance-none bg-[rgb(var(--bg-1))] rounded-full;
+}
+
+.formkit-input-range::-moz-range-track {
+  @apply appearance-none bg-[rgb(var(--bg-1))] rounded-full;
+}
+
+.formkit-input-range::-ms-track {
+  @apply appearance-none bg-[rgb(var(--bg-1))] rounded-full;
+}
+
+.formkit-input-range:focus {
+  @apply bg-[rgb(var(--bg-2))];
 }
