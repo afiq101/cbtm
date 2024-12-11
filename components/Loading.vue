@@ -16,11 +16,12 @@ const refreshPage = () => {
     <div class="flex justify-center text-center items-center h-screen">
       <div>
         <div class="flex justify-center items-center">
-          <img
+          <!-- <img
             src="@/assets/img/logo/logo-nobg.svg"
             class="w-[50px] mb-5"
             alt=""
-          />
+          /> -->
+          <h2 class="text-2xl font-bold mb-4">CBTM</h2>
         </div>
 
         <div

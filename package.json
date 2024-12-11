@@ -17,7 +17,6 @@
     "eslint-plugin-vue": "^9.16.1",
     "nuxt": "^3.6.5",
     "nuxt-icon": "^0.1.7",
-    "nuxt-multi-tenancy": "^1.2.4",
     "nuxt-security": "^0.13.0",
     "nuxt-typed-router": "^3.2.5",
     "postcss-import": "^15.1.0"
@@ -75,6 +74,7 @@
     "vue-code-highlight": "^0.7.8",
     "vue-codemirror": "^6.1.1",
     "vue-country-flag-next": "^2.3.2",
+    "vue-draggable-next": "^2.2.1",
     "vue-fullscreen": "^3.1.1",
     "vue-select": "^4.0.0-beta.5",
     "vue-sweetalert2": "^5.0.5",

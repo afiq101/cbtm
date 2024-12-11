@@ -185,7 +185,7 @@ $xlarge: 1280px;
 }
 
 // Custom Formkit Input for VSelect
-.formkit-vselect {
+.v-select {
   margin-bottom: 1rem;
 
   .vs__dropdown-menu {
@@ -193,8 +193,29 @@ $xlarge: 1280px;
   }
 
   .vs__dropdown-menu li {
-    background: rgb(var(--bg-1));
+    background: white;
     color: rgb(var(--text-color));
+
+    &:hover {
+      background: rgb(var(--bg-1));
+      cursor: pointer;
+    }
+  }
+
+  .vs__deselect {
+    svg {
+      fill: white;
+    }
+  }
+
+  .vs__search {
+    font-size: 0.875rem;
+
+    &:focus {
+      font-size: 0.875rem;
+      outline: none;
+      box-shadow: none;
+    }
   }
 
   .vs__dropdown-toggle {

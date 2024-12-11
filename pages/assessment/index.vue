@@ -6,77 +6,84 @@ definePageMeta({
   breadcrumb: [{ name: "Assessment", path: "/assessment" }],
 });
 
-// Define assessment categories with their metrics
+// Define assessment categories based on framework scoring components
 const assessmentCategories = ref([
   {
-    id: "competency",
-    title: "Competency Assessment",
-    description: "Evaluate professional competencies and skills",
-    icon: "ph:brain",
+    id: "situation",
+    title: "Situation Assessment",
+    description: "Evaluate understanding of situational context",
+    icon: "ph:compass",
     metrics: [
-      "Leadership",
-      "Communication",
-      "Problem Solving",
-      "Teamwork",
-      "Technical Skills",
+      "Context Understanding",
+      "Environmental Awareness",
+      "Problem Identification",
+      "Stakeholder Analysis",
     ],
     color: "blue",
+    weight: 20,
   },
   {
-    id: "health",
-    title: "Health Assessment",
-    description: "Track health and wellness metrics",
-    icon: "ph:heart",
+    id: "workload",
+    title: "Workload Management",
+    description: "Assess workload handling and prioritization",
+    icon: "ph:chart-bar",
     metrics: [
-      "Physical Fitness",
-      "Mental Health",
-      "Nutrition",
-      "Sleep Quality",
+      "Task Prioritization",
+      "Time Management",
+      "Resource Allocation",
+      "Work-Life Balance",
     ],
     color: "green",
+    weight: 20,
   },
   {
-    id: "performance",
-    title: "Performance Metrics",
-    description: "Measure work performance and productivity",
-    icon: "ph:chart-line-up",
-    metrics: ["Productivity", "Quality", "Efficiency", "Goal Achievement"],
+    id: "trigger",
+    title: "Trigger Response",
+    description: "Evaluate response to triggering events",
+    icon: "ph:lightning",
+    metrics: [
+      "Response Time",
+      "Decision Making",
+      "Initiative",
+      "Adaptability",
+    ],
+    color: "yellow",
+    weight: 20,
+  },
+  {
+    id: "action",
+    title: "Action Implementation",
+    description: "Assess execution of planned actions",
+    icon: "ph:play",
+    metrics: [
+      "Execution Quality",
+      "Follow-through",
+      "Collaboration",
+      "Results Achievement",
+    ],
     color: "purple",
+    weight: 20,
   },
   {
-    id: "safety",
-    title: "Safety Compliance",
-    description: "Assess workplace safety adherence",
-    icon: "ph:shield-check",
-    metrics: ["Safety Protocols", "Risk Assessment", "Emergency Preparedness"],
+    id: "result",
+    title: "Result Analysis",
+    description: "Evaluate outcomes and impact",
+    icon: "ph:chart-line-up",
+    metrics: [
+      "Goal Achievement",
+      "Impact Measurement",
+      "Learning Integration",
+      "Continuous Improvement",
+    ],
     color: "orange",
+    weight: 20,
   },
-]);
-
-const selectedCategory = ref(null);
-
-// Dummy users data (only shown after category selection)
-const users = ref([
-  { id: "EMP001", name: "John Doe", department: "Engineering" },
-  { id: "EMP002", name: "Jane Smith", department: "Marketing" },
-  { id: "EMP003", name: "Mike Johnson", department: "Sales" },
-  { id: "EMP004", name: "Sarah Williams", department: "HR" },
-  { id: "EMP005", name: "James Brown", department: "Engineering" },
-  { id: "EMP006", name: "Emily Davis", department: "Marketing" },
 ]);
 
 const router = useRouter();
 
 const selectCategory = (category) => {
-  selectedCategory.value = category;
-};
-
-const selectUser = (user) => {
-  router.push(`/assessment/${user.id}`);
-};
-
-const backToCategories = () => {
-  selectedCategory.value = null;
+  router.push(`/assessment/participants/${category.id}`);
 };
 </script>
 
@@ -87,30 +94,13 @@ const backToCategories = () => {
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-xl font-bold text-gray-800">CBTM Assessment</h1>
-          <p class="text-gray-500">
-            {{
-              selectedCategory
-                ? "Select a participant for assessment"
-                : "Choose an assessment category"
-            }}
-          </p>
+          <p class="text-gray-500">Choose an assessment category</p>
         </div>
-        <rs-button
-          v-if="selectedCategory"
-          variant="secondary-outline"
-          @click="backToCategories"
-        >
-          <Icon name="ph:arrow-left" class="w-4 h-4 mr-1" />
-          Back to Categories
-        </rs-button>
       </div>
     </div>
 
     <!-- Assessment Categories Grid -->
-    <div
-      v-if="!selectedCategory"
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-    >
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <rs-card
         v-for="category in assessmentCategories"
         :key="category.id"
@@ -127,7 +117,7 @@ const backToCategories = () => {
               />
             </div>
             <rs-badge :color="category.color">
-              {{ category.metrics.length }} metrics
+              Weight: {{ category.weight }}%
             </rs-badge>
           </div>
 
@@ -153,50 +143,6 @@ const backToCategories = () => {
         </div>
       </rs-card>
     </div>
-
-    <!-- Users List (shown after category selection) -->
-    <rs-card v-else>
-      <div class="p-6">
-        <div class="mb-4">
-          <h2 class="text-lg font-semibold">
-            {{ selectedCategory.title }} Participants
-          </h2>
-          <p class="text-gray-500">
-            Select a participant to begin the assessment
-          </p>
-        </div>
-
-        <rs-table
-          :field="['ID', 'Name', 'Department', 'Action']"
-          :data="users"
-          :options="{ hover: true, striped: true }"
-          :advanced="true"
-        >
-          <template #ID="{ value }">
-            <span class="font-medium">{{ value.id }}</span>
-          </template>
-
-          <template #Name="{ value }">
-            {{ value.name }}
-          </template>
-
-          <template #Department="{ value }">
-            <rs-badge>{{ value.department }}</rs-badge>
-          </template>
-
-          <template #Action="{ value }">
-            <rs-button
-              variant="primary-outline"
-              size="sm"
-              @click="selectUser(value)"
-            >
-              Start Assessment
-              <Icon name="ph:arrow-right" class="w-4 h-4 ml-1" />
-            </rs-button>
-          </template>
-        </rs-table>
-      </div>
-    </rs-card>
   </div>
 </template>
 

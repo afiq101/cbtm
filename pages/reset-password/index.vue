@@ -15,10 +15,11 @@ definePageMeta({
         <div
           class="absolute -bottom-3 left-3 img-container flex justify-start items-center mb-5"
         >
-          <img
+          <!-- <img
             src="@/assets/img/logo/logo-word-black.svg"
             class="max-w-[90px]"
-          />
+          /> -->
+          <h2 class="text-2xl font-bold">CBTM</h2>
         </div>
         <h3 class="mb-4">Reset Password</h3>
         <p class="text-slate-500 mb-6">

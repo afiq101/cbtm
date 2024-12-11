@@ -18,7 +18,6 @@ export default defineNuxtConfig({
     "nuxt-typed-router",
     "nuxt-icon",
     "@davestewart/nuxt-scrollbar",
-    "nuxt-multi-tenancy",
   ],
   app: {
     pageTransition: { name: "page", mode: "out-in" },
@@ -43,10 +42,6 @@ export default defineNuxtConfig({
       },
     ],
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
-  },
-  multiTenancy: {
-    tenantDynamicRoute: "site",
-    rootDomains: ["cbtm.com"],
   },
   css: ["~/assets/style/scss/main.scss"],
   tailwindcss: {
