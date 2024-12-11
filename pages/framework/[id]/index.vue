@@ -338,6 +338,15 @@ const setActiveTab = (tabId) => {
         <!-- Competencies Panel -->
         <div v-show="activeTab === 'competencies'" class="space-y-6">
           <div class="space-y-6">
+            <!-- Add Competency Button -->
+            <button
+              @click="actions.competency.add"
+              class="w-full flex flex-col items-center justify-center gap-2 h-full rounded-lg border-2 border-dashed border-gray-300 p-4 text-gray-500 hover:border-primary/70 hover:text-primary transition-colors"
+            >
+              <Icon name="ph:plus-circle" class="w-6 h-6" />
+              <span class="font-medium">Add New Competency</span>
+            </button>
+
             <rs-card
               v-for="competency in framework.competencies"
               :key="competency.id"
@@ -353,6 +362,7 @@ const setActiveTab = (tabId) => {
                       {{ competency.description }}
                     </p>
                   </div>
+
                   <div class="flex gap-2">
                     <rs-button
                       variant="danger-outline"
@@ -367,13 +377,6 @@ const setActiveTab = (tabId) => {
                     >
                       <Icon name="ph:pencil" class="w-4 h-4 mr-2" />
                       Edit
-                    </rs-button>
-                    <rs-button
-                      variant="primary"
-                      @click="actions.competency.add"
-                    >
-                      <Icon name="ph:plus" class="w-4 h-4 mr-2" />
-                      Add Form
                     </rs-button>
                   </div>
                 </div>
