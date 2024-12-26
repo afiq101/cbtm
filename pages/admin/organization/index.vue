@@ -20,53 +20,42 @@
     <rs-card>
       <div class="p-6">
         <rs-table
-          :field="[
-            'Name',
-            'Description',
-            'Users',
-            'Groups',
-            'Status',
-            'Action',
-          ]"
+          :field="['Name', 'Email', 'Groups', 'Status', 'Action']"
           :data="organizations"
           :options="{ hover: true, striped: true }"
           :advanced="true"
         >
           <template #Name="{ value }">
-            <span class="font-medium">{{ value.name }}</span>
+            <span class="font-medium">{{ value.org_name }}</span>
           </template>
 
-          <template #Description="{ value }">
-            {{ value.description }}
-          </template>
-
-          <template #Users="{ value }">
-            {{ value.totalUsers }}
+          <template #Email="{ value }">
+            {{ value.org_email }}
           </template>
 
           <template #Groups="{ value }">
-            {{ value.totalGroups }}
+            {{ value.groups }}
           </template>
 
           <template #Status="{ value }">
             <rs-badge
-              :color="value.status === 'Active' ? 'green' : 'gray'"
+              :color="value.status === 1 ? 'green' : 'gray'"
               class="capitalize"
             >
-              {{ value.status }}
+              {{ value.status === 1 ? "Active" : "Inactive" }}
             </rs-badge>
           </template>
 
           <template #Action="{ value }">
             <div class="flex space-x-2">
-              <rs-button
+              <!-- <rs-button
                 variant="primary-outline"
                 size="sm"
                 @click="router.push(`/organization/${value.id}`)"
               >
                 <Icon name="ph:pencil" class="w-4 h-4 mr-1" />
                 Manage
-              </rs-button>
+              </rs-button> -->
               <rs-button
                 variant="danger-outline"
                 size="sm"

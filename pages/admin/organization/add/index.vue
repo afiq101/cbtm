@@ -8,10 +8,12 @@ definePageMeta({
   ],
 });
 
+const { $swal } = useNuxtApp();
+
 const router = useRouter();
 const formData = reactive({
   name: "",
-  description: "",
+  email: "",
   status: "Active",
 });
 
@@ -20,8 +22,30 @@ const handleSubmit = async (formData) => {
     // Here you would typically make an API call to create the organization
     console.log("Form submitted:", formData);
 
-    // Navigate back to organizations list
-    router.push("/organization");
+    const resp = await $fetch("/api/organization/add", {
+      method: "POST",
+      body: {
+        name: formData.name,
+        email: formData.email,
+        status: formData.status,
+      },
+    });
+
+    console.log(resp);
+
+    if (resp.statusCode === 200) {
+      $swal.fire({
+        title: "Organization created successfully",
+        icon: "success",
+        timer: 2000,
+      });
+    } else {
+      $swal.fire({
+        title: resp.message,
+        icon: "error",
+        timer: 2000,
+      });
+    }
   } catch (error) {
     console.error("Error creating organization:", error);
   }
@@ -59,15 +83,15 @@ const handleSubmit = async (formData) => {
         />
 
         <FormKit
-          type="textarea"
-          name="description"
-          label="Description"
-          validation="required|length:10"
+          type="email"
+          name="email"
+          label="Email"
+          validation="required|email"
           :validation-messages="{
-            required: 'Description is required',
-            length: 'Description must be at least 10 characters',
+            required: 'Email is required',
+            email: 'Email is not valid',
           }"
-          v-model="formData.description"
+          v-model="formData.email"
         />
 
         <FormKit
@@ -83,7 +107,7 @@ const handleSubmit = async (formData) => {
           <rs-button
             variant="secondary"
             type="button"
-            @click="router.push('/organization')"
+            @click="router.push('/admin/organization')"
           >
             <Icon name="ph:x" class="w-4 h-4 mr-1" />
             Cancel

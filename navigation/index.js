@@ -48,6 +48,17 @@ export default [
         },
       },
       {
+        title: "Question Bank",
+        path: "/bank-question",
+        icon: "mdi:bank",
+        child: [],
+        meta: {
+          auth: {
+            role: ["superuser"],
+          },
+        },
+      },
+      {
         title: "Profile",
         path: "/profile",
         icon: "ph:user",
@@ -87,5 +98,10 @@ export default [
         },
       },
     ],
+    meta: {
+      auth: {
+        role: ["admin"],
+      },
+    },
   },
 ];

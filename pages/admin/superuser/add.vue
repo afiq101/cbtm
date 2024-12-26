@@ -18,6 +18,20 @@
         @submit="handleAddSuperuser"
       >
         <FormKit
+          type="select"
+          name="organization"
+          label="Organization"
+          validation="required"
+          :options="organizations"
+          :validation-messages="{
+            required: 'Organization is required',
+          }"
+          v-model="organizationId"
+          @click="getOrganizations"
+          :disabled="isLoadingOrgs"
+        />
+
+        <FormKit
           type="text"
           name="name"
           label="Username"
@@ -41,54 +55,6 @@
           v-model="email"
         />
 
-        <FormKit
-          :type="togglePasswordVisibility ? 'text' : 'password'"
-          name="password"
-          label="Password"
-          validation="required|length:8"
-          :validation-messages="{
-            required: 'Password is required',
-            length: 'Password must be at least 8 characters',
-          }"
-          v-model="password"
-        >
-          <template #suffix>
-            <div
-              class="bg-gray-100 hover:bg-slate-200 dark:bg-slate-700 hover:dark:bg-slate-900 h-full rounded-r-md p-3 flex justify-center items-center cursor-pointer"
-              @click="togglePasswordVisibility = !togglePasswordVisibility"
-            >
-              <Icon
-                :name="togglePasswordVisibility ? 'ion:eye-off-outline' : 'ion:eye-outline'"
-                class="w-5 h-5"
-              />
-            </div>
-          </template>
-        </FormKit>
-
-        <FormKit
-          :type="toggleConfirmPasswordVisibility ? 'text' : 'password'"
-          name="confirmPassword"
-          label="Confirm Password"
-          validation="required|confirm"
-          :validation-messages="{
-            required: 'Please confirm your password',
-            confirm: 'Passwords do not match',
-          }"
-          v-model="confirmPassword"
-        >
-          <template #suffix>
-            <div
-              class="bg-gray-100 hover:bg-slate-200 dark:bg-slate-700 hover:dark:bg-slate-900 h-full rounded-r-md p-3 flex justify-center items-center cursor-pointer"
-              @click="toggleConfirmPasswordVisibility = !toggleConfirmPasswordVisibility"
-            >
-              <Icon
-                :name="toggleConfirmPasswordVisibility ? 'ion:eye-off-outline' : 'ion:eye-outline'"
-                class="w-5 h-5"
-              />
-            </div>
-          </template>
-        </FormKit>
-
         <div class="flex justify-end gap-2 mt-4">
           <rs-button
             variant="secondary"
@@ -100,8 +66,12 @@
           </rs-button>
           <rs-button
             variant="success"
-            type="submit"
-            :disabled="!name || !email || !password || !confirmPassword"
+            btn-type="submit"
+            :disabled="
+              !name ||
+              !email ||
+              !organizationId
+            "
           >
             <Icon name="ph:check" class="w-4 h-4 mr-1" />
             Add Superuser
@@ -127,10 +97,35 @@ definePageMeta({
 
 const name = ref("");
 const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
-const togglePasswordVisibility = ref(false);
-const toggleConfirmPasswordVisibility = ref(false);
+const organizationId = ref("");
+const organizations = ref([
+  {
+    label: "Select Organization",
+    value: null,
+  },
+]);
+const isLoadingOrgs = ref(false);
+
+const getOrganizations = async () => {
+  if (organizations.value.length > 1 || isLoadingOrgs.value) return;
+
+  isLoadingOrgs.value = true;
+  try {
+    const resp = await $fetch("/api/lookup/get-organizations");
+
+    organizations.value = [
+      { label: "Select Organization", value: null },
+      ...resp.data.map((org) => ({
+        label: org.org_name,
+        value: org.org_id,
+      })),
+    ];
+  } catch (error) {
+    console.error("Error fetching organizations:", error);
+  } finally {
+    isLoadingOrgs.value = false;
+  }
+};
 
 const handleAddSuperuser = async () => {
   try {
@@ -139,7 +134,7 @@ const handleAddSuperuser = async () => {
       body: {
         name: name.value,
         email: email.value,
-        password: password.value,
+        organizationId: organizationId.value,
       },
     });
 
