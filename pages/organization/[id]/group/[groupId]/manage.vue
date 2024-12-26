@@ -2,6 +2,8 @@
 const route = useRoute();
 const router = useRouter();
 
+const { $swal } = useNuxtApp();
+
 definePageMeta({
   title: "Manage Group Members",
   middleware: ["auth"],
@@ -15,25 +17,14 @@ definePageMeta({
 });
 
 // Dummy data for demonstration
-const group = ref({
-  id: route.params.groupId,
-  name: "Engineering",
-  description: "Development team",
-  members: [
-    { id: 1, name: "John Doe", email: "john@example.com", role: "Admin" },
-    { id: 2, name: "Jane Smith", email: "jane@example.com", role: "Member" },
-  ],
-});
+const group = ref(null);
 
-const availableUsers = ref([
-  { id: 3, name: "Alice Johnson", email: "alice@example.com" },
-  { id: 4, name: "Bob Wilson", email: "bob@example.com" },
-]);
+const availableUsers = ref([]);
 
 const searchQuery = ref("");
 
 const filteredMembers = computed(() => {
-  if (!searchQuery.value) return group.value.members;
+  if (!searchQuery.value) return group.value?.members || [];
   const query = searchQuery.value.toLowerCase();
   return group.value.members.filter(
     (member) =>
@@ -44,10 +35,28 @@ const filteredMembers = computed(() => {
 
 const handleRemoveMember = async (memberId) => {
   try {
-    // Here you would typically make an API call to remove the member
-    group.value.members = group.value.members.filter(
-      (member) => member.id !== memberId
-    );
+    const resp = await $fetch(`/api/group/remove-member`, {
+      method: "POST",
+      body: {
+        groupId: route.params.groupId,
+        member: memberId,
+      },
+    });
+
+    if (resp.statusCode === 200) {
+      $swal.fire({
+        title: "Success",
+        text: resp.message,
+        icon: "success",
+      });
+      getGroupDetail();
+    } else {
+      $swal.fire({
+        title: "Error",
+        text: resp.message,
+        icon: "error",
+      });
+    }
   } catch (error) {
     console.error("Error removing member:", error);
   }
@@ -64,37 +73,56 @@ const handleAddMembers = async () => {
 
   showValidationError.value = false;
   try {
-    // Add the selected users to the current members list
-    const newMembers = availableUsers.value
-      .filter((user) => selectedMembers.value.includes(user.id))
-      .map((user) => ({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: "Member", // Default role for bulk-added users
-      }));
+    const resp = await $fetch(`/api/group/add-member`, {
+      method: "POST",
+      body: {
+        groupId: route.params.groupId,
+        members: selectedMembers.value,
+      },
+    });
 
-    // Update the members list
-    group.value.members = [...group.value.members, ...newMembers];
-
-    // Remove added users from available users list
-    availableUsers.value = availableUsers.value.filter(
-      (user) => !selectedMembers.value.includes(user.id)
-    );
-
-    // Reset selection
-    selectedMembers.value = [];
-
-    // Show success message
-    useToast().success("Users successfully added to the group");
+    if (resp.statusCode === 200) {
+      $swal.fire({
+        title: "Success",
+        text: resp.message,
+        icon: "success",
+      });
+      getGroupDetail();
+    } else {
+      $swal.fire({
+        title: "Error",
+        text: resp.message,
+        icon: "error",
+      });
+    }
   } catch (error) {
     console.error("Error adding members:", error);
     useToast().error("Failed to add users to the group");
   }
 };
 
-// Add computed property to show/hide the add members form
-const hasAvailableUsers = computed(() => availableUsers.value.length > 0);
+const getGroupDetail = async () => {
+  const resp = await $fetch(`/api/group/detail`, {
+    params: {
+      groupId: route.params.groupId,
+    },
+  });
+  group.value = resp.data;
+
+  console.log("Group Detail:", group.value);
+};
+
+const getUsers = async () => {
+  const resp = await $fetch(`/api/group/get-users`);
+  console.log("Response Users:", resp);
+
+  availableUsers.value = resp.data;
+};
+
+onMounted(() => {
+  getGroupDetail();
+  getUsers();
+});
 </script>
 
 <template>
@@ -104,7 +132,7 @@ const hasAvailableUsers = computed(() => availableUsers.value.length > 0);
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-xl font-bold text-gray-800">
-            Manage {{ group.name }} Members
+            Manage {{ group?.group.group_name || "Group" }} Members
           </h1>
           <p class="text-gray-500">Add or remove members from this group</p>
         </div>
@@ -124,16 +152,19 @@ const hasAvailableUsers = computed(() => availableUsers.value.length > 0);
           advanced
         >
           <template #Name="{ value }">
-            {{ value.name }}
+            <span class="capitalize">{{ value.user_username }}</span>
           </template>
 
           <template #Email="{ value }">
-            {{ value.email }}
+            {{ value.user_email || "-" }}
           </template>
 
           <template #Role="{ value }">
-            <rs-badge :color="value.role === 'Admin' ? 'blue' : 'gray'">
-              {{ value.role }}
+            <rs-badge
+              :color="value.user_role === 'manager' ? 'blue' : 'gray'"
+              class="capitalize"
+            >
+              {{ value.user_role }}
             </rs-badge>
           </template>
 
@@ -141,7 +172,7 @@ const hasAvailableUsers = computed(() => availableUsers.value.length > 0);
             <rs-button
               variant="danger-outline"
               size="sm"
-              @click="handleRemoveMember(value.id)"
+              @click="handleRemoveMember(value.user_id)"
             >
               <Icon name="ph:user-minus" class="w-4 h-4" />
             </rs-button>
@@ -150,15 +181,20 @@ const hasAvailableUsers = computed(() => availableUsers.value.length > 0);
       </rs-card>
 
       <!-- Add Members Section -->
-      <rs-card class="p-4" v-if="hasAvailableUsers">
+      <rs-card class="p-4" v-if="availableUsers.length > 0">
         <h2 class="text-lg font-semibold mb-4">Add Members</h2>
         <div class="space-y-4">
           <v-select
             v-model="selectedMembers"
-            :options="availableUsers"
+            :options="
+              availableUsers.map((user) => ({
+                value: user.user_id,
+                label: user.user_username,
+              }))
+            "
             multiple
-            label="name"
-            :reduce="(user) => user.id"
+            label="label"
+            :reduce="(option) => option.value"
             placeholder="Select users to add"
           />
 
@@ -195,7 +231,7 @@ const hasAvailableUsers = computed(() => availableUsers.value.length > 0);
       <rs-card class="p-4" v-else>
         <div class="text-center text-gray-500">
           <Icon name="ph:users" class="w-8 h-8 mx-auto mb-2" />
-          <p>All available users have been added to this group.</p>
+          <p>Did not found any users.</p>
         </div>
       </rs-card>
     </div>

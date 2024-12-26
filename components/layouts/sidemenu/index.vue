@@ -1,6 +1,10 @@
 <script setup>
+import { useUserStore } from "~/stores/user";
+
 import Menu from "~/navigation/index.js";
 import RSItem from "~/components/layouts/sidemenu/Item.vue";
+
+const userStore = useUserStore();
 
 // const menuItem = Menu;
 
@@ -50,16 +54,16 @@ onMounted(() => {
         class="flex items-center gap-x-3 px-3 border border-gray-200 rounded-lg p-2 mx-3 cursor-pointer hover:bg-gray-100"
       >
         <img
-          src="https://avatars.githubusercontent.com/u/1?v=4"
+          :src="`https://ui-avatars.com/api/?name=${userStore.organization.name}&background=random`"
           alt="Avatar"
           class="h-8 w-8 object-cover rounded-full"
         />
         <div>
           <h2 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Tech Corp
+            {{ userStore.organization.name }}
           </h2>
           <p class="text-xs text-gray-500 dark:text-gray-400">
-            techcorp@example.com
+            {{ userStore.organization.email }}
           </p>
         </div>
       </nuxt-link>

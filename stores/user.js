@@ -6,6 +6,8 @@ export const useUserStore = defineStore({
     username: null,
     roles: null,
     isAuth: false,
+
+    organization: null,
   }),
   persist: true,
   actions: {
@@ -17,6 +19,9 @@ export const useUserStore = defineStore({
     },
     setIsAuthenticated(isAuth) {
       this.isAuth = isAuth;
+    },
+    setOrganization(organization) {
+      this.organization = organization;
     },
   },
 });

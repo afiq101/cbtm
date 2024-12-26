@@ -1,111 +1,156 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "audit": {
-      "type": "object",
-      "properties": {
-        "auditID": {
-          "type": "integer"
-        },
-        "auditIP": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "auditURL": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "auditURLMethod": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "auditURLPayload": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "auditCreatedDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        }
-      }
-    },
     "user": {
       "type": "object",
       "properties": {
-        "userID": {
+        "user_id": {
           "type": "integer"
         },
-        "userSecretKey": {
+        "user_username": {
           "type": [
             "string",
             "null"
           ]
         },
-        "userUsername": {
+        "user_password": {
           "type": [
             "string",
             "null"
           ]
         },
-        "userPassword": {
+        "user_email": {
           "type": [
             "string",
             "null"
           ]
         },
-        "userFullName": {
+        "user_superuser_id": {
           "type": [
-            "string",
+            "integer",
             "null"
           ]
         },
-        "userEmail": {
+        "user_status": {
           "type": [
-            "string",
+            "integer",
             "null"
           ]
         },
-        "userPhone": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "userStatus": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "userCreatedDate": {
+        "user_created_at": {
           "type": [
             "string",
             "null"
           ],
           "format": "date-time"
         },
-        "userModifiedDate": {
+        "user_modified_at": {
           "type": [
             "string",
             "null"
           ],
           "format": "date-time"
         },
-        "userrole": {
+        "user_modified_by": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "organization": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/userrole"
+            "$ref": "#/definitions/organization"
+          }
+        },
+        "role": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/role"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user_group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/user_group"
+          }
+        },
+        "user_organization": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/user_organization"
+          }
+        }
+      }
+    },
+    "organization": {
+      "type": "object",
+      "properties": {
+        "org_id": {
+          "type": "integer"
+        },
+        "org_name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "org_email": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "org_status": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "org_created_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "org_modified_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "org_modified_by": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/group"
+          }
+        },
+        "user": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/user"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user_organization": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/user_organization"
           }
         }
       }
@@ -113,209 +158,225 @@
     "role": {
       "type": "object",
       "properties": {
-        "roleID": {
+        "role_id": {
           "type": "integer"
         },
-        "roleName": {
+        "role_name": {
           "type": [
             "string",
             "null"
           ]
         },
-        "roleDescription": {
+        "role_description": {
           "type": [
             "string",
             "null"
           ]
         },
-        "roleStatus": {
+        "role_status": {
           "type": [
-            "string",
+            "integer",
             "null"
           ]
         },
-        "roleCreatedDate": {
+        "role_created_at": {
           "type": [
             "string",
             "null"
           ],
           "format": "date-time"
         },
-        "roleModifiedDate": {
+        "role_modified_at": {
           "type": [
             "string",
             "null"
           ],
           "format": "date-time"
         },
-        "userrole": {
+        "role_modified_by": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "user": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/userrole"
+            "$ref": "#/definitions/user"
           }
         }
       }
     },
-    "lookup": {
+    "user_organization": {
       "type": "object",
       "properties": {
-        "lookupID": {
+        "uo_id": {
           "type": "integer"
         },
-        "lookupOrder": {
+        "uo_status": {
           "type": [
             "integer",
             "null"
           ]
-        },
-        "lookupTitle": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "lookupRefCode": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "lookupValue": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "lookupType": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "lookupStatus": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "lookupCreatedDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "lookupModifiedDate": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        }
-      }
-    },
-    "userrole": {
-      "type": "object",
-      "properties": {
-        "userRoleID": {
-          "type": "integer"
-        },
-        "userRoleCreatedDate": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "role": {
-          "$ref": "#/definitions/role"
         },
         "user": {
-          "$ref": "#/definitions/user"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/user"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "organization": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/organization"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     },
-    "customer": {
+    "group": {
       "type": "object",
       "properties": {
-        "cust_id": {
+        "group_id": {
           "type": "integer"
         },
-        "cust_name": {
+        "group_name": {
           "type": [
             "string",
             "null"
           ]
         },
-        "cust_type": {
+        "group_description": {
           "type": [
             "string",
             "null"
           ]
         },
-        "cust_username": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "cust_ic_number": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "cust_address": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "cust_dob": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "format": "date-time"
-        },
-        "cust_gender": {
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "cust_status": {
+        "group_status": {
           "type": [
             "integer",
             "null"
           ]
         },
-        "cust_created_datetime": {
+        "group_created_at": {
           "type": [
             "string",
             "null"
           ],
           "format": "date-time"
+        },
+        "group_modified_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "group_modified_by": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "organization": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/organization"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user_group": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/user_group"
+          }
+        }
+      }
+    },
+    "user_group": {
+      "type": "object",
+      "properties": {
+        "ug_id": {
+          "type": "integer"
+        },
+        "ug_status": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "ug_created_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "ug_modified_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "ug_modified_by": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "group": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/group"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "user": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/user"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
       }
     }
   },
   "type": "object",
   "properties": {
-    "audit": {
-      "$ref": "#/definitions/audit"
-    },
     "user": {
       "$ref": "#/definitions/user"
+    },
+    "organization": {
+      "$ref": "#/definitions/organization"
     },
     "role": {
       "$ref": "#/definitions/role"
     },
-    "lookup": {
-      "$ref": "#/definitions/lookup"
+    "user_organization": {
+      "$ref": "#/definitions/user_organization"
     },
-    "userrole": {
-      "$ref": "#/definitions/userrole"
+    "group": {
+      "$ref": "#/definitions/group"
     },
-    "customer": {
-      "$ref": "#/definitions/customer"
+    "user_group": {
+      "$ref": "#/definitions/user_group"
     }
   }
 }

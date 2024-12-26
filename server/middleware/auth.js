@@ -37,10 +37,13 @@ export default defineEventHandler(async (event) => {
     const getUser = await getUserInfo(payloadUser.username);
     if (!getUser) throw new Error("User not found");
 
+    const getOrganization = await getOrganizationInfo(getUser.organization);
+
     event.context.user = {
-      userID: getUser.userID || null,
+      userID: getUser.user_id || null,
       email: payloadUser.email || null,
       roles: payloadUser.roles || [],
+      organization: getOrganization || null,
     };
 
     return;
@@ -70,6 +73,7 @@ function verifyAccessToken(accessToken) {
     const token = ENV.auth.secretAccess;
     return jwt.verify(accessToken, token);
   } catch (error) {
+    console.log("Error verifying access token:", error);
     return false;
   }
 }
@@ -79,6 +83,7 @@ function verifyRefreshToken(refreshToken) {
     const token = ENV.auth.secretRefresh;
     return jwt.verify(refreshToken, token);
   } catch (error) {
+    console.log("Error verifying refresh token:", error);
     return false;
   }
 }
@@ -93,10 +98,12 @@ function generateAccessToken(user) {
 }
 
 async function getUserInfo(username) {
+  console.log("Username:", username);
+
   try {
     const user = await prisma.user.findFirst({
       where: {
-        userUsername: username,
+        user_username: username,
       },
     });
 
@@ -105,5 +112,31 @@ async function getUserInfo(username) {
     return user;
   } catch (error) {
     console.log(error);
+  }
+}
+
+async function getOrganizationInfo(userID) {
+  try {
+    const organization = await prisma.organization.findFirst({
+      where: {
+        user_organization: {
+          some: {
+            uo_user_id: userID,
+          },
+        },
+      },
+      select: {
+        org_id: true,
+        org_name: true,
+      },
+    });
+
+    if (!organization) return null;
+
+    return organization;
+  } catch (error) {
+    console.log(error);
+
+    return null;
   }
 }

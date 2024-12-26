@@ -2,6 +2,8 @@ export default defineEventHandler(async (event) => {
   try {
     const { userID } = event.context.user;
 
+    console.log("User ID:", userID);
+
     if (userID == null) {
       return {
         statusCode: 401,
@@ -11,7 +13,7 @@ export default defineEventHandler(async (event) => {
 
     const validatedUser = await prisma.user.findFirst({
       where: {
-        userID: parseInt(userID),
+        user_id: parseInt(userID),
       },
     });
     if (!validatedUser) {

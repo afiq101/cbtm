@@ -3,7 +3,7 @@ definePageMeta({
   title: "Add Organization",
   middleware: ["auth"],
   breadcrumb: [
-    { name: "Organizations", path: "/organization" },
+    { name: "Organization", path: "/admin/organization" },
     { name: "Add", type: "current" },
   ],
 });

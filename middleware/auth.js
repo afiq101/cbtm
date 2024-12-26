@@ -3,12 +3,14 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
 
   if (process.client) {
     // Validate every request to every page
-    const { data: validateUser } = await useFetch("/api/auth/validate", {
+    const res = await $fetch("/api/auth/validate", {
       method: "GET",
     });
 
+    console.log("Validate User:", res);
+
     // If user is not logged in, redirect to logout page
-    if (validateUser.value.statusCode === 401) {
+    if (res.statusCode === 401) {
       $swal
         .fire({
           title: "Session Expired",

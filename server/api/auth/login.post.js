@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
 
     const user = await prisma.user.findFirst({
       where: {
-        userUsername: username,
+        user_username: username,
       },
     });
 
@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     }
 
     const hashedPassword = sha256(password).toString();
-    if (user.userPassword !== hashedPassword) {
+    if (user.user_password !== hashedPassword) {
       return {
         statusCode: 401,
         message: "Invalid password",
@@ -36,28 +36,65 @@ export default defineEventHandler(async (event) => {
     }
 
     // Get user roles
-    const roles = await prisma.userrole.findMany({
+    const roles = await prisma.role.findMany({
       where: {
-        userRoleUserID: user.userID,
+        role_id: user.user_type,
       },
       select: {
-        role: {
-          select: {
-            roleName: true,
-          },
-        },
+        role_name: true,
       },
     });
 
-    const roleNames = roles.map((r) => r.role.roleName);
+    const roleNames = roles.map((r) => r.role_name);
+
+    let organization = null;
+
+    if (roleNames.includes("admin") || roleNames.includes("developer")) {
+      // If superuser, get direct organization from user_organization table
+      organization = {
+        org_name: "CBTM",
+        org_email: "cbtm@cbtm.com",
+      };
+    } else if (roleNames.includes("superuser")) {
+      // If superuser, get direct organization from user_organization table
+      organization = await prisma.organization.findFirst({
+        where: {
+          user_organization: {
+            some: {
+              uo_user_id: user.user_id,
+            },
+          },
+        },
+      });
+    } else {
+      // If not superuser, get superuser id, then get organization from user_organization table
+      const superuser = await prisma.user.findFirst({
+        where: {
+          user_id: user.user_id,
+        },
+        select: {
+          user_superuser_id: true,
+        },
+      });
+
+      organization = await prisma.organization.findFirst({
+        where: {
+          user_organization: {
+            some: {
+              uo_user_id: superuser.user_superuser_id,
+            },
+          },
+        },
+      });
+    }
 
     const accessToken = generateAccessToken({
-      username: user.userUsername,
+      username: user.user_username,
       roles: roleNames,
     });
 
     const refreshToken = generateRefreshToken({
-      username: user.userUsername,
+      username: user.user_username,
       roles: roleNames,
     });
 
@@ -71,8 +108,12 @@ export default defineEventHandler(async (event) => {
       statusCode: 200,
       message: "Login success",
       data: {
-        username: user.userUsername,
+        username: user.user_username,
         roles: roleNames,
+        organization: {
+          name: organization.org_name,
+          email: organization.org_email,
+        },
       },
     };
   } catch (error) {

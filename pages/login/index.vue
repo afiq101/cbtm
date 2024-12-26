@@ -16,7 +16,7 @@ const togglePasswordVisibility = ref(false);
 
 const login = async () => {
   try {
-    const res = await useFetch("/api/auth/login", {
+    const res = await $fetch("/api/auth/login", {
       method: "POST",
       initialCache: false,
       body: JSON.stringify({
@@ -25,13 +25,15 @@ const login = async () => {
       }),
     });
 
-    const data = res.data.value;
+    console.log("Login Response:", res);
 
-    if (data.statusCode === 200) {
+    if (res.statusCode === 200) {
       // Save token to pinia store
-      userStore.setUsername(data.data.username);
-      userStore.setRoles(data.data.roles);
+      userStore.setUsername(res.data.username);
+      userStore.setRoles(res.data.roles);
       userStore.setIsAuthenticated(true);
+
+      userStore.setOrganization(res.data.organization);
 
       $swal.fire({
         position: "center",
@@ -42,11 +44,23 @@ const login = async () => {
         showConfirmButton: false,
       });
 
-      window.location.href = "/dashboard";
+      // window.location.href = "/dashboard";
+
+      if (
+        res.data.roles.includes("superuser") ||
+        res.data.roles.includes("admin") ||
+        res.data.roles.includes("developer")
+      ) {
+        navigateTo("/dashboard");
+      } else if (res.data.roles.includes("manager")) {
+        navigateTo(`/assessment`);
+      } else if (res.data.roles.includes("employee")) {
+        navigateTo(`/profile`);
+      }
     } else {
       $swal.fire({
         title: "Error!",
-        text: data.message,
+        text: res.message,
         icon: "error",
       });
     }

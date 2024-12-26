@@ -12,72 +12,90 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model audit {
-  auditID          Int       @id @default(autoincrement())
-  auditIP          String?   @db.VarChar(255)
-  auditURL         String?   @db.VarChar(255)
-  auditURLMethod   String?   @db.VarChar(255)
-  auditURLPayload  String?   @db.VarChar(255)
-  auditCreatedDate DateTime? @db.DateTime(0)
+model user {
+  user_id           Int                 @id @default(autoincrement())
+  user_username     String?             @db.VarChar(255)
+  user_password     String?             @db.VarChar(255)
+  user_email        String?             @db.VarChar(255)
+  user_type         Int?
+  user_superuser_id Int?
+  user_status       Int?
+  user_created_at   DateTime?           @db.DateTime(0)
+  user_modified_at  DateTime?           @db.DateTime(0)
+  user_modified_by  Int?
+  organization      organization[]
+  role              role?               @relation(fields: [user_type], references: [role_id], onDelete: NoAction, onUpdate: NoAction, map: "user_ibfk_1")
+  user_group        user_group[]
+  user_organization user_organization[]
+
+  @@index([user_type], map: "user_type")
 }
 
-model user {
-  userID           Int        @id @default(autoincrement())
-  userSecretKey    String?    @db.VarChar(255)
-  userUsername     String?    @db.VarChar(255)
-  userPassword     String?    @db.VarChar(255)
-  userFullName     String?    @db.VarChar(255)
-  userEmail        String?    @db.VarChar(255)
-  userPhone        String?    @db.VarChar(255)
-  userStatus       String?    @db.VarChar(255)
-  userCreatedDate  DateTime?  @db.DateTime(0)
-  userModifiedDate DateTime?  @db.DateTime(0)
-  userrole         userrole[]
+model organization {
+  org_id            Int                 @id @default(autoincrement())
+  org_user_id       Int?
+  org_name          String?             @db.VarChar(255)
+  org_email         String?             @db.VarChar(255)
+  org_status        Int?
+  org_created_at    DateTime?           @db.DateTime(0)
+  org_modified_at   DateTime?           @db.DateTime(0)
+  org_modified_by   Int?
+  group             group[]
+  user              user?               @relation(fields: [org_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "organization_ibfk_1")
+  user_organization user_organization[]
+
+  @@index([org_user_id], map: "org_user_id")
 }
 
 model role {
-  roleID           Int        @id @default(autoincrement())
-  roleName         String?    @db.VarChar(255)
-  roleDescription  String?    @db.VarChar(255)
-  roleStatus       String?    @db.VarChar(255)
-  roleCreatedDate  DateTime?  @db.DateTime(0)
-  roleModifiedDate DateTime?  @db.DateTime(0)
-  userrole         userrole[]
+  role_id          Int       @id @default(autoincrement())
+  role_name        String?   @db.VarChar(255)
+  role_description String?   @db.VarChar(255)
+  role_status      Int?
+  role_created_at  DateTime? @db.DateTime(0)
+  role_modified_at DateTime? @db.DateTime(0)
+  role_modified_by Int?
+  user             user[]
 }
 
-model lookup {
-  lookupID           Int       @id @default(autoincrement())
-  lookupOrder        Int?
-  lookupTitle        String?   @db.VarChar(255)
-  lookupRefCode      String?   @db.VarChar(255)
-  lookupValue        String?   @db.VarChar(255)
-  lookupType         String?   @db.VarChar(255)
-  lookupStatus       String?   @db.VarChar(255)
-  lookupCreatedDate  DateTime? @db.DateTime(0)
-  lookupModifiedDate DateTime? @db.DateTime(0)
+model user_organization {
+  uo_id        Int           @id @default(autoincrement())
+  uo_user_id   Int?
+  uo_org_id    Int?
+  uo_status    Int?
+  user         user?         @relation(fields: [uo_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "user_organization_ibfk_1")
+  organization organization? @relation(fields: [uo_org_id], references: [org_id], onDelete: Restrict, onUpdate: Restrict, map: "user_organization_ibfk_3")
+
+  @@index([uo_org_id], map: "uo_org_id")
+  @@index([uo_user_id], map: "uo_user_id")
 }
 
-model userrole {
-  userRoleID          Int      @id @default(autoincrement())
-  userRoleUserID      Int      @default(0)
-  userRoleRoleID      Int      @default(0)
-  userRoleCreatedDate DateTime @db.DateTime(0)
-  role                role     @relation(fields: [userRoleRoleID], references: [roleID], onDelete: NoAction, onUpdate: NoAction, map: "FK_userrole_role")
-  user                user     @relation(fields: [userRoleUserID], references: [userID], onDelete: NoAction, onUpdate: NoAction, map: "FK_userrole_user")
+model group {
+  group_id          Int           @id @default(autoincrement())
+  group_org_id      Int?
+  group_name        String?       @db.VarChar(255)
+  group_description String?       @db.VarChar(255)
+  group_status      Int?
+  group_created_at  DateTime?     @db.DateTime(0)
+  group_modified_at DateTime?     @db.DateTime(0)
+  group_modified_by Int?
+  organization      organization? @relation(fields: [group_org_id], references: [org_id], onDelete: NoAction, onUpdate: NoAction, map: "group_ibfk_1")
+  user_group        user_group[]
 
-  @@index([userRoleRoleID], map: "FK_userrole_role")
-  @@index([userRoleUserID], map: "FK_userrole_user")
+  @@index([group_org_id], map: "group_org_id")
 }
 
-model customer {
-  cust_id               Int       @id @default(autoincrement())
-  cust_name             String?   @db.VarChar(255)
-  cust_type             String?   @db.VarChar(255)
-  cust_username         String?   @db.VarChar(255)
-  cust_ic_number        String?   @db.VarChar(255)
-  cust_address          String?   @db.VarChar(255)
-  cust_dob              DateTime? @db.Date
-  cust_gender           String?   @db.VarChar(255)
-  cust_status           Int?
-  cust_created_datetime DateTime? @db.DateTime(0)
+model user_group {
+  ug_id          Int       @id @default(autoincrement())
+  ug_group_id    Int?
+  ug_user_id     Int?
+  ug_status      Int?
+  ug_created_at  DateTime? @db.DateTime(0)
+  ug_modified_at DateTime? @db.DateTime(0)
+  ug_modified_by Int?
+  group          group?    @relation(fields: [ug_group_id], references: [group_id], onDelete: NoAction, onUpdate: NoAction, map: "user_group_ibfk_1")
+  user           user?     @relation(fields: [ug_user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "user_group_ibfk_2")
+
+  @@index([ug_group_id], map: "ug_group_id")
+  @@index([ug_user_id], map: "ug_user_id")
 }

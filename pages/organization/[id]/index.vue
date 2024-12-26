@@ -1,6 +1,11 @@
 <script setup>
+import { useUserStore } from "@/stores/user";
+
 const route = useRoute();
 const router = useRouter();
+const { $swal } = useNuxtApp();
+
+const userStore = useUserStore();
 
 definePageMeta({
   title: "Organization Details",
@@ -13,56 +18,28 @@ const organization = ref({
   id: route.params.id,
   name: "Tech Corp",
   description: "Technology Solutions Company",
-  users: [
-    {
-      id: 1,
-      name: "John Doe",
-      email: "john@techcorp.com",
-      role: "Admin",
-      group: "Engineering",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      email: "jane@techcorp.com",
-      role: "User",
-      group: "Marketing",
-    },
-  ],
-  groups: [
-    {
-      id: 1,
-      name: "Engineering",
-      description: "Development team",
-      members: 12,
-    },
-    {
-      id: 2,
-      name: "Marketing",
-      description: "Marketing team",
-      members: 8,
-    },
-  ],
 });
+
+const users = ref([]);
+const groups = ref([]);
 
 const activeTab = ref("users");
 const searchQuery = ref("");
 
 const filteredUsers = computed(() => {
-  if (!searchQuery.value) return organization.value.users;
+  if (!searchQuery.value) return users.value;
   const query = searchQuery.value.toLowerCase();
-  return organization.value.users.filter(
+  return users.value.filter(
     (user) =>
       user.name.toLowerCase().includes(query) ||
-      user.email.toLowerCase().includes(query) ||
-      user.group.toLowerCase().includes(query)
+      user.email.toLowerCase().includes(query)
   );
 });
 
 const filteredGroups = computed(() => {
-  if (!searchQuery.value) return organization.value.groups;
+  if (!searchQuery.value) return groups.value;
   const query = searchQuery.value.toLowerCase();
-  return organization.value.groups.filter(
+  return groups.value.filter(
     (group) =>
       group.name.toLowerCase().includes(query) ||
       group.description.toLowerCase().includes(query)
@@ -71,10 +48,30 @@ const filteredGroups = computed(() => {
 
 const handleDeleteUser = async (userId) => {
   try {
-    // Here you would typically make an API call to delete the user
-    organization.value.users = organization.value.users.filter(
-      (user) => user.id !== userId
-    );
+    const resp = await $fetch("/api/user/delete", {
+      method: "POST",
+      body: {
+        userId: userId,
+      },
+    });
+
+    console.log("RESP", resp);
+
+    if (resp.statusCode === 200) {
+      $swal.fire({
+        title: "Success",
+        text: resp.message,
+        icon: "success",
+      });
+
+      getUsers();
+    } else {
+      $swal.fire({
+        title: "Error",
+        text: resp.message,
+        icon: "error",
+      });
+    }
   } catch (error) {
     console.error("Error deleting user:", error);
   }
@@ -88,18 +85,89 @@ const navigateToAddUser = () => {
 const navigateToAddGroup = () => {
   router.push(`/organization/${route.params.id}/group/add`);
 };
+
+const getUsers = async () => {
+  const resp = await $fetch("/api/user/list");
+
+  console.log("Fetched Users:", resp);
+
+  if (resp.statusCode === 200) {
+    users.value = resp.data;
+  }
+};
+
+const getGroups = async () => {
+  const resp = await $fetch("/api/group/list");
+
+  if (resp.statusCode === 200) {
+    groups.value = resp.data;
+  }
+
+  console.log("Fetched Groups:", groups.value);
+};
+
+const handleDeleteGroup = async (groupId) => {
+  console.log("GROUP ID", groupId);
+
+  const resp = await $fetch(`/api/group/delete`, {
+    method: "POST",
+    body: {
+      groupId: groupId,
+    },
+  });
+
+  if (resp.statusCode === 200) {
+    $swal.fire({
+      title: "Success",
+      text: resp.message,
+      icon: "success",
+    });
+
+    getGroups();
+  } else {
+    $swal.fire({
+      title: "Error",
+      text: resp.message,
+      icon: "error",
+    });
+  }
+};
+
+// Modify the data fetching functions
+const getOrganizationData = async () => {
+  try {
+    const id = route.params.id;
+    organization.value.id = id;
+    // Fetch real organization data here
+    loading.value = false;
+  } catch (err) {
+    error.value = err.message;
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  try {
+    await Promise.all([getOrganizationData(), getUsers(), getGroups()]);
+  } catch (err) {
+  } finally {
+  }
+});
 </script>
 
 <template>
   <div>
     <Breadcrumb />
+
     <div class="mb-6">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-xl font-bold text-gray-800">
-            {{ organization.name }}
+            {{ userStore.organization.name }}
           </h1>
-          <p class="text-gray-500">{{ organization.description }}</p>
+          <p class="text-gray-500">
+            {{ userStore.organization.email }}
+          </p>
         </div>
       </div>
     </div>
@@ -115,34 +183,33 @@ const navigateToAddGroup = () => {
               </rs-button>
             </div>
             <rs-table
-              :field="['Name', 'Email', 'Role', 'Group', 'Action']"
+              :field="['Name', 'Email', 'Role', 'Action']"
               :data="filteredUsers"
               :options="{ hover: true, striped: true }"
               advanced
             >
               <template #Name="{ value }">
-                {{ value.name }}
+                <span class="capitalize">{{ value.user_username }}</span>
               </template>
 
               <template #Email="{ value }">
-                {{ value.email }}
+                {{ value.user_email || "-" }}
               </template>
 
               <template #Role="{ value }">
-                <rs-badge :color="value.role === 'Admin' ? 'blue' : 'gray'">
-                  {{ value.role }}
+                <rs-badge
+                  :color="value.role.role_name === 'manager' ? 'blue' : 'gray'"
+                  class="capitalize"
+                >
+                  {{ value.role.role_name }}
                 </rs-badge>
-              </template>
-
-              <template #Group="{ value }">
-                {{ value.group }}
               </template>
 
               <template #Action="{ value }">
                 <rs-button
                   variant="danger-outline"
                   size="sm"
-                  @click="handleDeleteUser(value.id)"
+                  @click="handleDeleteUser(value.user_id)"
                 >
                   <Icon name="ph:trash" class="w-4 h-4" />
                 </rs-button>
@@ -165,7 +232,7 @@ const navigateToAddGroup = () => {
               </rs-button>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
               <div
                 v-for="group in filteredGroups"
                 :key="group.id"
@@ -176,13 +243,20 @@ const navigateToAddGroup = () => {
                   <rs-badge color="blue">{{ group.members }} members</rs-badge>
                 </div>
                 <p class="text-sm text-gray-600">{{ group.description }}</p>
-                <div class="flex justify-end mt-4">
+                <div class="flex justify-end mt-4 gap-2">
+                  <rs-button
+                    variant="danger-outline"
+                    size="sm"
+                    @click="handleDeleteGroup(group.id)"
+                  >
+                    <Icon name="ph:trash" class="w-4 h-4" />
+                  </rs-button>
                   <rs-button
                     variant="primary-outline"
                     size="sm"
                     @click="
                       navigateTo(
-                        `/organization/${route.params.id}/group/1/manage`
+                        `/organization/${route.params.id}/group/${group.id}/manage`
                       )
                     "
                   >

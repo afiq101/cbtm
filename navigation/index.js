@@ -8,28 +8,83 @@ export default [
         path: "/dashboard",
         icon: "ic:outline-dashboard",
         child: [],
-        meta: {},
+        meta: {
+          auth: {
+            role: ["admin", "developer", "superuser"],
+          },
+        },
       },
       {
         title: "Assessment",
         path: "/assessment",
         icon: "ic:outline-assessment",
         child: [],
-        meta: {},
+        meta: {
+          auth: {
+            role: ["admin", "developer", "manager"],
+          },
+        },
       },
       {
         title: "Framework",
         path: "/framework",
         icon: "hugeicons:chip",
         child: [],
-        meta: {},
+        meta: {
+          auth: {
+            role: ["admin", "developer", "superuser"],
+          },
+        },
       },
       {
         title: "Organization",
         path: "/organization/1",
         icon: "ph:building",
         child: [],
-        meta: {},
+        meta: {
+          auth: {
+            role: ["admin", "developer", "superuser"],
+          },
+        },
+      },
+      {
+        title: "Profile",
+        path: "/profile",
+        icon: "ph:user",
+        child: [],
+        meta: {
+          auth: {
+            role: ["admin", "developer", "superuser", "manager", "employee"],
+          },
+        },
+      },
+    ],
+  },
+  {
+    header: "Administrator",
+    description: "",
+    child: [
+      {
+        title: "Organization",
+        path: "/admin/organization",
+        icon: "ph:building",
+        child: [],
+        meta: {
+          auth: {
+            role: ["admin"],
+          },
+        },
+      },
+      {
+        title: "Superuser",
+        path: "/admin/superuser",
+        icon: "ph:user",
+        child: [],
+        meta: {
+          auth: {
+            role: ["admin"],
+          },
+        },
       },
     ],
   },

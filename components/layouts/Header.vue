@@ -1,4 +1,8 @@
 <script setup>
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
+
 const isVertical = ref(true);
 const isDesktop = ref(true);
 
@@ -84,30 +88,41 @@ onMounted(() => {
         </nuxt-link>
       </div>
 
-      <div class="flex gap-2 item-center justify-items-end">
+      <div class="flex gap-2 items-center justify-end">
         <VDropdown placement="bottom-end" distance="13" name="profile">
-          <button class="icon-btn profile px-2 h-10">
+          <button
+            class="flex items-center px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
             <img
-              class="w-8 h-8 object-cover rounded-full"
-              src="@/assets/img/user/default.svg"
+              class="w-9 h-9 object-cover rounded-full border-2 border-gray-200"
+              :src="`https://ui-avatars.com/api/?name=${userStore.username}&background=random`"
             />
-            <div
-              v-if="isDesktop"
-              class="grid grid-cols-1 text-left ml-3 flex-none"
-            >
-              <p class="font-semibold text-sm truncate w-24 mb-0">John Doe</p>
+            <div v-if="isDesktop" class="ml-3 text-left">
+              <p
+                class="font-medium text-sm text-gray-900 truncate max-w-[150px]"
+              >
+                {{ userStore.username }}
+              </p>
+              <p class="text-xs text-gray-500 truncate max-w-[150px]">
+                {{ userStore.roles[0] }}
+              </p>
             </div>
-            <Icon name="ic:outline-keyboard-arrow-down" class="ml-3" />
+            <Icon
+              name="ic:outline-keyboard-arrow-down"
+              class="ml-2 text-gray-400"
+            />
           </button>
           <template #popper>
-            <ul class="header-dropdown w-full md:w-52">
+            <ul
+              class="py-2 bg-white rounded-lg shadow-lg border border-gray-100 min-w-[200px]"
+            >
               <li>
                 <a
                   href="/logout"
-                  class="flex items-center cursor-pointer py-2 px-4 hover:bg-[rgb(var(--bg-1))]"
+                  class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <Icon name="ic:outline-logout" class="mr-2" />
-                  Logout
+                  <Icon name="ic:outline-logout" class="mr-3 text-gray-400" />
+                  <span>Sign Out</span>
                 </a>
               </li>
             </ul>

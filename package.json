@@ -57,6 +57,7 @@
     "cross-env": "^7.0.3",
     "crypto-js": "^4.1.1",
     "floating-vue": "^2.0.0-beta.24",
+    "formidable": "^3.5.2",
     "jsonwebtoken": "^8.5.1",
     "luxon": "^3.1.0",
     "maska": "^1.5.0",
@@ -84,6 +85,7 @@
     "vue3-apexcharts": "^1.4.1",
     "vue3-click-away": "^1.2.4",
     "vue3-dropzone": "^2.0.1",
-    "vuedraggable": "^4.1.0"
+    "vuedraggable": "^4.1.0",
+    "xlsx": "^0.18.5"
   }
 }

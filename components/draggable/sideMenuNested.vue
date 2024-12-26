@@ -113,8 +113,8 @@ const getUserList = async () => {
   if (data.value?.statusCode === 200) {
     userList.value = data.value.data.map((user) => {
       return {
-        label: user.userUsername,
-        value: user.userUsername,
+        label: user.user_username,
+        value: user.user_username,
       };
     });
   }
@@ -343,16 +343,16 @@ const removeChild = (type, data) => {
                 count == 0 && element.header
                   ? element.header
                   : count === 0
-                  ? "(No Header)"
-                  : ""
+                    ? "(No Header)"
+                    : ""
               }}</span>
               <p class="text-gray-500 dark:text-gray-500">
                 {{
                   count == 0 && element.description
                     ? element.description
                     : count === 0
-                    ? "There will be no header shown"
-                    : ""
+                      ? "There will be no header shown"
+                      : ""
                 }}
               </p>
             </div>
@@ -511,8 +511,8 @@ const removeChild = (type, data) => {
             viewPermissionTypeRadio == 'user'
               ? userList
               : viewPermissionTypeRadio == 'role'
-              ? roleList
-              : []
+                ? roleList
+                : []
           "
           v-model="selectListValue"
           multiple
